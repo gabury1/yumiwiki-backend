@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component
 import wiki.yumi.yumiwiki.common.exception.BaseException
 import wiki.yumi.yumiwiki.common.exception.code.CommonErrorCode
 import wiki.yumi.yumiwiki.document.domain.port.out.DocumentLoader
+import wiki.yumi.yumiwiki.document.domain.vo.Document
 
 /**
  * GitHub 저장소로부터 파일을 로드하는 어댑터
@@ -23,13 +24,14 @@ class GitHubDocumentAdapter(
     @Value("\${github.repository.name:}")
     private lateinit var repositoryName: String
 
-    override fun loadDocument(name: String): String {
+    override fun loadDocument(name: String): Document {
         validateConfiguration()
 
         try {
             val repository = gitHub.getRepository("$owner/$repositoryName")
             val content = repository.getFileContent("docs/$name.md")
-            return content.read().use { it.readBytes().toString(Charsets.UTF_8) }
+            val raw = content.read().use { it.readBytes().toString(Charsets.UTF_8) }
+            return Document(raw)
         } catch (e: Exception) {
             throw BaseException(CommonErrorCode.RESOURCE_NOT_FOUND)
         }

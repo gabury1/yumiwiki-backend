@@ -1,5 +1,7 @@
 package wiki.yumi.yumiwiki.document.domain.port.out
 
+import wiki.yumi.yumiwiki.document.domain.vo.Document
+
 /**
  * 문서 로드를 위한 아웃바운드 포트
  *
@@ -13,7 +15,7 @@ interface DocumentLoader {
      * @param name 문서 이름 (확장자 제외, 예: "HTTP")
      * @return 마크다운 원본 내용
      */
-    fun loadDocument(name: String): String
+    fun loadDocument(name: String): Document
 
     /**
      * docs 디렉토리의 모든 문서 이름 목록을 로드한다.

@@ -2,6 +2,7 @@ package wiki.yumi.yumiwiki.document.domain.port.out
 
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import wiki.yumi.yumiwiki.document.domain.vo.Document
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
@@ -19,10 +20,10 @@ class DocumentLoaderTest {
         val documentName = "test-document"
 
         // when: 문서 로드
-        val content = loader.loadDocument(documentName)
+        val document = loader.loadDocument(documentName)
 
         // then: 예상한 콘텐츠가 반환됨
-        assertEquals("# Test Document\n\nThis is a test.", content)
+        assertEquals("# Test Document\n\nThis is a test.", document.rawContent)
     }
 
     @Test
@@ -91,8 +92,9 @@ class DocumentLoaderTest {
             "README" to "# README\n\nRoot file."
         )
 
-        override fun loadDocument(name: String): String {
-            return documents[name] ?: throw IllegalArgumentException("Document not found: $name")
+        override fun loadDocument(name: String): Document {
+            val rawContent = documents[name] ?: throw IllegalArgumentException("Document not found: $name")
+            return Document(rawContent)
         }
 
         override fun loadAllDocuments(): List<String> {

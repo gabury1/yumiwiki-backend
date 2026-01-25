@@ -36,10 +36,10 @@ class GitHubDocumentAdapterTest {
         val adapter = createAdapter(mockGitHub)
 
         // when: 문서 로드
-        val content = adapter.loadDocument("HTTP")
+        val document = adapter.loadDocument("HTTP")
 
         // then: GitHub에서 가져온 콘텐츠 반환
-        assertEquals("# Test Document\n\nContent from GitHub", content)
+        assertEquals("# Test Document\n\nContent from GitHub", document.rawContent)
     }
 
     @Test
