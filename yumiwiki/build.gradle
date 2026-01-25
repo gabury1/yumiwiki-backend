@@ -47,6 +47,9 @@ dependencies {
 	testImplementation 'org.jetbrains.kotlin:kotlin-test-junit5'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
+	// MockK
+	testImplementation 'io.mockk:mockk:1.13.8'
+
 	// Github API
 	implementation("org.kohsuke:github-api:1.318")
 
