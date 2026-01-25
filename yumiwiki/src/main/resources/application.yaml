@@ -2,7 +2,7 @@ spring:
   config:
     import: optional:file:.env[.properties]
   profiles:
-      active: dev
+      active: ${SPRING_PROFILE}
   datasource:
     url: jdbc:sqlite:./database/${SQLITE_DB_FILE_NAME}
     driver-class-name: org.sqlite.JDBC
@@ -22,3 +22,28 @@ github:
   repository:
     owner: ${GITHUB_REPO_OWNER:}
     name: ${GITHUB_REPO_NAME:}
+
+# Swagger/OpenAPI 설정
+springdoc:
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /api-docs
+  show-actuator: true
+
+---
+# Production 프로필
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+# Production에서 Swagger 비활성화
+springdoc:
+  swagger-ui:
+    enabled: false
+  api-docs:
+    enabled: false
