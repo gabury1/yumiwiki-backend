@@ -15,3 +15,10 @@ spring:
 
   flyway:
     enabled: true
+
+# GitHub 저장소 설정
+github:
+  token: ${GITHUB_TOKEN:}
+  repository:
+    owner: ${GITHUB_REPO_OWNER:}
+    name: ${GITHUB_REPO_NAME:}
