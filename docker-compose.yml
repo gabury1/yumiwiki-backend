@@ -1,0 +1,20 @@
+services:
+  yumiwiki:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: yumiwiki-backend
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      # SQLite 데이터베이스 영속성
+      - ./database:/app/database
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
