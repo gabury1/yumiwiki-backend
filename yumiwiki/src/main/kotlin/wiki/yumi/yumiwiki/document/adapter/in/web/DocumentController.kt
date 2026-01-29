@@ -75,5 +75,4 @@ class DocumentController(
         val docs = documentIndexService.readDocIndex()
         return ResponseEntity.ok(docs)
     }
-
 }

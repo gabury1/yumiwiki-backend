@@ -3,6 +3,7 @@ package wiki.yumi.yumiwiki.document.application.usecase
 import org.springframework.stereotype.Service
 import wiki.yumi.yumiwiki.document.application.dto.response.DocumentResponseDTO
 import wiki.yumi.yumiwiki.document.domain.port.out.DocumentLoader
+import wiki.yumi.yumiwiki.document.domain.service.DocumentRenderService
 import wiki.yumi.yumiwiki.document.domain.vo.Document
 
 /**
@@ -15,8 +16,8 @@ import wiki.yumi.yumiwiki.document.domain.vo.Document
  */
 @Service
 class DocumentViewUsecase(
-    private val documentLoader: DocumentLoader
-
+    private val documentLoader: DocumentLoader,
+    private val documentRenderService: DocumentRenderService
 ) {
     /**
      * 문서를 조회한다.
@@ -32,11 +33,12 @@ class DocumentViewUsecase(
     {
         // 문서를 로드
         val doc : Document = documentLoader.loadDocument(title)
+        val body = documentRenderService.render(doc)
 
         return DocumentResponseDTO(
                 doc.metadata?.title,
                 doc.metadata?.aliases,
-                doc.body
+                body
         )
     }
 
