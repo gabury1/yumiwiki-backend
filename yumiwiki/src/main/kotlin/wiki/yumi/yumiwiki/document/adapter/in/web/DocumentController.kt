@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import wiki.yumi.yumiwiki.document.application.dto.response.DocumentListResponseDTO
 import wiki.yumi.yumiwiki.document.application.dto.response.DocumentResponseDTO
 import wiki.yumi.yumiwiki.document.application.usecase.DocumentViewUsecase
 import wiki.yumi.yumiwiki.document.domain.service.DocumentIndexService
@@ -75,4 +76,27 @@ class DocumentController(
         val docs = documentIndexService.readDocIndex()
         return ResponseEntity.ok(docs)
     }
+
+    @Operation(
+        summary = "문서 목록 조회",
+        description = "문서 목록을 랜덤 순서로 반환합니다. limit 파라미터로 개수를 제한할 수 있습니다."
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "문서 목록 조회 성공",
+                content = [Content(schema = Schema(implementation = DocumentListResponseDTO::class))]
+            )
+        ]
+    )
+    @GetMapping("/docs")
+    fun getDocsList(
+        @Parameter(description = "반환할 문서 개수 (0이면 전체)", required = true)
+        limit: Int
+    ): ResponseEntity<DocumentListResponseDTO> {
+        val result = documentIndexService.getDocList(limit)
+        return ResponseEntity.ok(result)
+    }
+
 }

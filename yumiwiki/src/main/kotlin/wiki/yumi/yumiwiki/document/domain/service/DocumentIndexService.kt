@@ -7,6 +7,7 @@ import jakarta.annotation.PostConstruct
 import org.springframework.cache.CacheManager
 import org.springframework.stereotype.Service
 import wiki.yumi.yumiwiki.common.cache.CacheKeys
+import wiki.yumi.yumiwiki.document.application.dto.response.DocumentListResponseDTO
 import wiki.yumi.yumiwiki.document.domain.port.out.DocumentLoader
 
 /**
@@ -41,6 +42,23 @@ class DocumentIndexService (
         return cache.get(query, String::class.java)
     }
 
+    /**
+     * 문서 목록을 반환한다.
+     *
+     * @param limit 반환할 문서 개수 (0이면 전체)
+     * @return 문서 제목 목록
+     */
+    @Suppress("UNCHECKED_CAST")
+    fun getDocList(limit: Int): DocumentListResponseDTO {
+        val cache = cacheManager.getCache(CacheKeys.DOC_INDEX)
+        val nativeCache = cache?.nativeCache as? Cache<String, Any>
+        val list = nativeCache?.getIfPresent("docList") as? List<String> ?: emptyList()
+
+        val shuffled = list.shuffled()
+        val result = if (limit > 0) shuffled.take(limit) else shuffled
+        return DocumentListResponseDTO(result)
+    }
+
 
     /**
      * 문서 검색 인덱스를 갱신한다.
@@ -64,6 +82,9 @@ class DocumentIndexService (
         val docJson = documentLoader.loadRootFile("navigator.json")
         val parseJson = objectMapper.readValue<Map<String, List<String>>>(docJson)
 
+        // 문서 제목 리스트를 별도 저장
+        cache?.put("docList", parseJson.keys.toList())
+
         // 문서명과 별칭을 캐시에 저장
         parseJson.forEach {
             val key = it.key
@@ -82,10 +103,13 @@ class DocumentIndexService (
      * @return 캐시에 저장된 모든 매핑 (키 -> 문서명)
      * 예: {"c#" -> "C Sharp", "csharp" -> "C Sharp", "C Sharp" -> "C Sharp"}
      */
+    @Suppress("UNCHECKED_CAST")
     fun readDocIndex(): Map<String, String> {
         val cache = cacheManager.getCache(CacheKeys.DOC_INDEX) ?: return emptyMap()
-        val nativeCache = cache.nativeCache as Cache<String, String>
+        val nativeCache = cache.nativeCache as Cache<String, Any>
         return nativeCache.asMap()
+            .filterKeys { it != "docList" }  // docList 키 제외
+            .mapValues { it.value as String }
     }
 
 }
