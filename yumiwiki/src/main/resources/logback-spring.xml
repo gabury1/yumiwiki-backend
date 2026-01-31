@@ -1,0 +1,53 @@
+<configuration>
+    <springProperty name="LOKI_HOST" source="loki.host" defaultValue="localhost"/>
+    <springProperty name="LOKI_PORT" source="loki.port" defaultValue="3100"/>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="LOKI" class="com.github.loki4j.logback.Loki4jAppender">
+        <http>
+            <url>http://${LOKI_HOST}:${LOKI_PORT}/loki/api/v1/push</url>
+        </http>
+        <format>
+            <label>
+                <pattern>app=yumiwiki-backend</pattern>
+            </label>
+            <message>
+                <pattern>
+                    {
+                        "timestamp": "%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX}",
+                        "level": "%level",
+                        "thread": "%thread",
+                        "logger": "%logger{36}",
+                        "profile": "%mdc{profile}",
+                        "body": "%replace(%msg){'\"','\\\"'}"
+                    }
+                </pattern>
+            </message>
+        </format>
+    </appender>
+
+    <springProfile name="prod,dev">
+        <root level="WARN">
+            <appender-ref ref="LOKI"/>
+            <appender-ref ref="CONSOLE"/>
+        </root>
+        <logger name="wiki.yumi.yumiwiki.common.log.LogAppender" level="INFO" additivity="false">
+            <appender-ref ref="LOKI"/>
+            <appender-ref ref="CONSOLE"/>
+        </logger>
+    </springProfile>
+
+    <springProfile name="local">
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+        </root>
+        <logger name="wiki.yumi.yumiwiki.common.log.LogAppender" level="INFO" additivity="false">
+            <appender-ref ref="CONSOLE"/>
+        </logger>
+    </springProfile>
+</configuration>
