@@ -24,6 +24,7 @@ class GlobalExceptionHandler {
     // RuntimeException 처리
     @ExceptionHandler(RuntimeException::class)
     fun handleRuntimeException(ex: RuntimeException, request: HttpServletRequest): ResponseEntity<Any> {
+        ex.printStackTrace()
         return ResponseEntity.status(500).body(
             mapOf(
                 "status" to 500,

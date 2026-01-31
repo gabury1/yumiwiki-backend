@@ -3,18 +3,6 @@ spring:
     import: optional:file:.env[.properties]
   profiles:
       active: ${SPRING_PROFILE}
-  datasource:
-    url: jdbc:sqlite:./database/${SQLITE_DB_FILE_NAME}
-    driver-class-name: org.sqlite.JDBC
-
-  jpa:
-    database-platform: org.hibernate.community.dialect.SQLiteDialect
-    hibernate:
-      ddl-auto: validate
-    open-in-view: false
-
-  flyway:
-    enabled: true
 
 # GitHub 저장소 설정
 github:

@@ -12,14 +12,17 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import wiki.yumi.yumiwiki.document.application.dto.response.DocumentListResponseDTO
 import wiki.yumi.yumiwiki.document.application.dto.response.DocumentResponseDTO
 import wiki.yumi.yumiwiki.document.application.usecase.DocumentViewUsecase
+import wiki.yumi.yumiwiki.document.domain.service.DocumentIndexService
 
 @Tag(name = "문서 API", description = "YumiWiki 문서 조회 API")
 @RestController
 @RequestMapping("/api")
 class DocumentController(
-    private val documentViewUsecase: DocumentViewUsecase
+    private val documentViewUsecase: DocumentViewUsecase,
+    private val documentIndexService: DocumentIndexService
 ) {
 
     @Operation(
@@ -48,6 +51,52 @@ class DocumentController(
         val doc = documentViewUsecase.documentView(name)
         return ResponseEntity.ok().body(doc)
 
+    }
+
+    @Operation(
+        summary = "문서 인덱스 조회",
+        description = "모든 문서명과 별칭의 매핑을 반환합니다. 캐시를 갱신한 후 전체 인덱스를 제공합니다."
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "인덱스 조회 성공",
+                content = [Content(schema = Schema(implementation = Map::class))]
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "navigator.json 파일을 찾을 수 없음"
+            )
+        ]
+    )
+    @GetMapping("/docs/index")
+    fun getDocsIndex(): ResponseEntity<Map<String, String>> {
+        documentIndexService.refreshDocIndex()
+        val docs = documentIndexService.readDocIndex()
+        return ResponseEntity.ok(docs)
+    }
+
+    @Operation(
+        summary = "문서 목록 조회",
+        description = "문서 목록을 랜덤 순서로 반환합니다. limit 파라미터로 개수를 제한할 수 있습니다."
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "문서 목록 조회 성공",
+                content = [Content(schema = Schema(implementation = DocumentListResponseDTO::class))]
+            )
+        ]
+    )
+    @GetMapping("/docs")
+    fun getDocsList(
+        @Parameter(description = "반환할 문서 개수 (0이면 전체)", required = true)
+        limit: Int
+    ): ResponseEntity<DocumentListResponseDTO> {
+        val result = documentIndexService.getDocList(limit)
+        return ResponseEntity.ok(result)
     }
 
 }

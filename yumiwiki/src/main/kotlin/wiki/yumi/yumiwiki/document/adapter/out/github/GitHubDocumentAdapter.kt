@@ -57,7 +57,7 @@ class GitHubDocumentAdapter(
 
         try {
             val repository = gitHub.getRepository("$owner/$repositoryName")
-            val content = repository.getFileContent("$name.md")
+            val content = repository.getFileContent(name)
             return content.read().use { it.readBytes().toString(Charsets.UTF_8) }
         } catch (e: Exception) {
             throw BaseException(CommonErrorCode.RESOURCE_NOT_FOUND)
@@ -72,8 +72,7 @@ class GitHubDocumentAdapter(
             val contents = repository.getDirectoryContent("/")
 
             return contents
-                .filter { it.name.endsWith(".md") }
-                .map { it.name.removeSuffix(".md") }
+                .map { it.name }
         } catch (e: Exception) {
             throw BaseException(CommonErrorCode.RESOURCE_NOT_FOUND)
         }
