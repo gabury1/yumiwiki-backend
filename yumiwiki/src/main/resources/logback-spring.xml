@@ -24,6 +24,7 @@
                         "thread": "%thread",
                         "logger": "%logger{36}",
                         "profile": "%mdc{profile}",
+                        "logType": "%mdc{logType}",
                         "body": "%replace(%msg){'\"','\\\"'}"
                     }
                 </pattern>

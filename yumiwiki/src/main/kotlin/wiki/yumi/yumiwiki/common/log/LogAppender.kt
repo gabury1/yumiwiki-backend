@@ -19,8 +19,6 @@ class LogAppender(
 
     @EventListener(ApplicationReadyEvent::class)
     fun onApplicationReady() {
-        // MDC에 profile 설정 - 모든 로그에 자동으로 포함됨
-        MDC.put("profile", activeProfile)
 
         val startupLog = mapOf(
             "event" to "server_started",
@@ -31,15 +29,17 @@ class LogAppender(
     }
 
     fun appendInfoLog(logType:String, infoLog: Map<String, String>) {
+        MDC.put("profile", activeProfile)
         MDC.put("logType", logType)
         logger.info(objectMapper.writeValueAsString(infoLog))
-        MDC.remove("logType")
+        MDC.clear()
     }
 
     fun appendErrorLog(logType:String, errorLog: Map<String, String>) {
+        MDC.put("profile", activeProfile)
         MDC.put("logType", logType)
         logger.error(objectMapper.writeValueAsString(errorLog))
-        MDC.remove("logType")
+        MDC.clear()
     }
 
 }
