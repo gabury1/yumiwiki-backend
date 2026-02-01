@@ -10,7 +10,9 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import wiki.yumi.yumiwiki.document.application.dto.response.DocumentListResponseDTO
 import wiki.yumi.yumiwiki.document.application.dto.response.DocumentResponseDTO
@@ -22,7 +24,7 @@ import wiki.yumi.yumiwiki.document.domain.service.DocumentIndexService
 @RequestMapping("/api")
 class DocumentController(
     private val documentViewUsecase: DocumentViewUsecase,
-    private val documentIndexService: DocumentIndexService
+    private val documentIndexService: DocumentIndexService,
 ) {
 
     @Operation(
@@ -42,13 +44,23 @@ class DocumentController(
             )
         ]
     )
-    @GetMapping("/docs/{name}")
+    @GetMapping("/docs/{query}")
     fun getDocs(
         @Parameter(description = "조회할 문서 제목 (예: HTTP, JavaScript)", required = true)
-        @PathVariable("name") name: String
+        @PathVariable("query") query: String,
+
+        @Parameter(description = "클라이언트 장치 식별자", required = false)
+        @RequestHeader(name = "X-Device-ID", required = false) deviceId: String?,
+
+        @Parameter(description = "유입 출처 (예: google, threads)", required = false)
+        @RequestParam(name = "utm_source", required = false) utmSource: String?,
+
+        @Parameter(description = "직전 문서 제목 (내부 이동 시 사용)", required = false)
+        @RequestParam(name = "referer_doc", required = false) refererDoc: String?
     ): ResponseEntity<Any> {
 
-        val doc = documentViewUsecase.documentView(name)
+        val doc = documentViewUsecase.documentView(query, deviceId, utmSource, refererDoc)
+
         return ResponseEntity.ok().body(doc)
 
     }

@@ -31,11 +31,11 @@ class DocumentRenderService(
      * @param document 원본 문서
      * @return 렌더링된 HTML 본문
      */
-    fun render(document: Document): String {
+    fun render(title:String, document: Document): String {
         var body = document.body
 
         // 위키링크 변환
-        body = convertWikiLinks(body)
+        body = convertWikiLinks(title, body)
 
         // TODO: Infobox 파싱
         // TODO: 목차 생성
@@ -57,7 +57,7 @@ class DocumentRenderService(
      * @param body 원본 본문
      * @return 위키링크가 변환된 본문
      */
-    private fun convertWikiLinks(body: String): String {
+    private fun convertWikiLinks(title: String, body: String): String {
         // 1. 코드블럭 추출 및 placeholder로 치환
         val codeBlockRegex = Regex("```[\\s\\S]*?```")
         val codeBlocks = mutableListOf<String>()
@@ -83,7 +83,7 @@ class DocumentRenderService(
             val exists = documentIndexService.searchDoc(link) != null
             val cssClass = if (exists) "wiki-link-exist" else "wiki-link-nonexist"
 
-            "<a href='/docs/$link' class='$cssClass'>$text</a>"
+            "<a href='/docs/$link?referer_doc=$title' class='$cssClass'>$text</a>"
         }
 
         // 3. placeholder를 원본 코드블럭으로 복원

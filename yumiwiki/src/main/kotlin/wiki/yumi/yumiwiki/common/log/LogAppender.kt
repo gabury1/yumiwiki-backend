@@ -39,7 +39,7 @@ class LogAppender(
     fun appendErrorLog(logType:String, errorLog: Map<String, String>) {
         MDC.put("logType", logType)
         logger.error(objectMapper.writeValueAsString(errorLog))
-        MDC.put("logType", logType)
+        MDC.remove("logType")
     }
 
 }
