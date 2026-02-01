@@ -11,6 +11,11 @@ github:
     owner: ${GITHUB_REPO_OWNER:}
     name: ${GITHUB_REPO_NAME:}
 
+# Loki 설정
+loki:
+  host: ${LOKI_HOST:localhost}
+  port: ${LOKI_PORT:3100}
+
 # Swagger/OpenAPI 설정
 springdoc:
   swagger-ui:

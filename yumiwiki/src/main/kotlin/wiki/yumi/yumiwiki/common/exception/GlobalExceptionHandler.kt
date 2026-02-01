@@ -16,7 +16,7 @@ class GlobalExceptionHandler(
     @ExceptionHandler(BaseException::class)
     fun handleBaseException(ex: BaseException, request: HttpServletRequest): ResponseEntity<Any> {
         logAppender.appendErrorLog("BUSINESS_EXCEPTION_LOG", mapOf(
-            "status" to ex.errorCode.status.toString(),
+            "status" to ex.errorCode.status.value().toString(),
             "message" to ex.errorCode.message,
             "path" to "${request.method} ${request.requestURI}"
         ))
