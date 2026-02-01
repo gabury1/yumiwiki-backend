@@ -1,4 +1,4 @@
-package wiki.yumi.yumiwiki.document.exception.code
+package wiki.yumi.yumiwiki.common.exception.code
 
 import org.springframework.http.HttpStatus
 import wiki.yumi.yumiwiki.common.exception.BaseErrorCode
